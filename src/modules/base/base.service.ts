@@ -8,11 +8,9 @@ import { BaseEntity } from './base.entity';
 @Component()
 export class BaseService<T extends BaseEntity> implements IBaseService<T>{
 	constructor(
-    private readonly genericRepository: Repository<T>) {
-		console.log('Im the ORM Service');
-	}
+    private readonly genericRepository: Repository<T>) {}
 
-  create(entity: T): Promise<number>{
+  create(entity: any): Promise<number>{
 	  try {
 		return new Promise<number> ((resolve, reject) => {
 			this.genericRepository.save(entity)
@@ -50,14 +48,15 @@ export class BaseService<T extends BaseEntity> implements IBaseService<T>{
 	}
   }
 
-  update(entity: T): Promise<T>{
+  update(entity: any): Promise<any>{
 	try {
-		return new Promise<T> ((resolve, reject) => {
+		return new Promise<any> ((resolve, reject) => {
 			this.genericRepository.findOneById(entity.id)
 			.then(responseGet => {
 				try {
 					if (responseGet == null) reject('Not existing')
-					this.genericRepository.save(responseGet)
+					let retrievedEntity: any = responseGet as any
+					this.genericRepository.save(retrievedEntity)
 					.then(response => resolve(response))
 					.catch(err => reject(err))
 				}
